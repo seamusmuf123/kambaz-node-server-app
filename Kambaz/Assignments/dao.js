@@ -1,51 +1,31 @@
-import fs from "fs";
-import path from "path";
+import model from "../Assignments/model.js";
 import { v4 as uuidv4 } from "uuid";
-
-const DB_PATH = path.join(process.cwd(), "Kambaz", "Database", "db.json");
-
-function loadDb() {
-  return JSON.parse(fs.readFileSync(DB_PATH));
-}
-
-function saveDb(db) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-}
 
 export default function AssignmentsDao() {
 
-  function findAssignments(courseId) {
-    const db = loadDb();
-    return db.assignments.filter(a => a.course === courseId);
+  async function findAssignments(courseId) {
+    const assignments = await model.find({ course: courseId });
+    return assignments;
   }
 
-  function createAssignment(assignment) {
-    const db = loadDb();
+  async function createAssignment(assignment) {
     const newAssignment = { ...assignment, _id: uuidv4() };
-    db.assignments.push(newAssignment);
-    saveDb(db);
-    return newAssignment;
+    return model.create(newAssignment);
   }
 
-  function deleteAssignment(id) {
-    const db = loadDb();
-    db.assignments = db.assignments.filter(a => a._id !== id);
-    saveDb(db);
+  async function deleteAssignment(assignmentId) {
+    const status = await model.deleteOne({ _id: assignmentId });
+    return status;
   }
 
-  function updateAssignment(id, updates) {
-    const db = loadDb();
-    const a = db.assignments.find(a => a._id === id);
-    Object.assign(a, updates);
-    saveDb(db);
-    return a;
+  async function updateAssignments(assignmentId, assignmentUpdates) {
+    return model.updateOne({ _id: assignmentId.toString() }, { $set: assignmentUpdates });
   }
 
   return {
     findAssignments,
     createAssignment,
     deleteAssignment,
-    updateAssignment
+    updateAssignments
   };
 }
-
