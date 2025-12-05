@@ -16,13 +16,11 @@ const CONNECTION_STRING = process.env.DATABASE_CONNECTION_STRING || "mongodb://1
 mongoose.connect(CONNECTION_STRING);
 
 const app = express()
-app.use(cors(
-    {
+app.use(cors({
    credentials: true,
    origin: process.env.CLIENT_URL || "http://localhost:3000",
- }
+}));
 
-))
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kambaz",
   resave: false,
