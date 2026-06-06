@@ -20,7 +20,7 @@ const app = express()
 const allowedOrigins = [
   process.env.CLIENT_URL?.trim(),
   "http://localhost:3000",
-  "https://kambaz-next-js-c4550-seamus-tqbl.vercel.app"
+  "https://kambaz-next-js-cs4550-seamus-tqbl.vercel.app"
 ];
 
 console.log("CLIENT_URL =", JSON.stringify(process.env.CLIENT_URL));
