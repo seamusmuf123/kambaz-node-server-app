@@ -17,11 +17,31 @@ mongoose.connect(CONNECTION_STRING);
 
 const app = express()
 
+const allowedOrigins = [
+  process.env.CLIENT_URL?.trim(),
+  "http://localhost:3000",
+  "https://kambaz-next-js-c4550-seamus-tqbl.vercel.app",
+  "https://kambaz-next-js-c45550-seamus-tqbl.vercel.app",
+];
+
 console.log("CLIENT_URL =", JSON.stringify(process.env.CLIENT_URL));
-app.use(cors({
-   credentials: true,
-   origin: process.env.CLIENT_URL || "http://localhost:3000",
-}));
+console.log("ALLOWED ORIGINS =", allowedOrigins);
+
+app.use(
+  cors({
+    credentials: true,
+    origin: (origin, callback) => {
+      console.log("REQUEST ORIGIN =", JSON.stringify(origin));
+      console.log("ORIGIN ALLOWED =", allowedOrigins.includes(origin));
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked origin: ${origin}`));
+      }
+    },
+  })
+);
 
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kambaz",
