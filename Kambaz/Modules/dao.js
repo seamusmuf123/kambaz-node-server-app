@@ -13,7 +13,7 @@ export default function ModulesDao(db) {
    );
   return newModule;
 }
-async function deleteModule(moduleId) {
+async function deleteModule(courseId, moduleId) {
   const status = await model.updateOne(
      { _id: courseId },
      { $pull: { modules: { _id: moduleId } } }
