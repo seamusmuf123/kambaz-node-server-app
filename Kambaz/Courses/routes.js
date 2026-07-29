@@ -49,23 +49,77 @@ export default function CourseRoutes(app) {
   app.put("/api/courses/:courseId", updateCourse);
 
   const enrollUserInCourse = async (req, res) => {
+  try {
     let { uid, cid } = req.params;
+
     if (uid === "current") {
-      const currentUser = req.session["currentUser"];
+      const currentUser =
+        req.session["currentUser"];
+
+      if (!currentUser) {
+        res.sendStatus(401);
+        return;
+      }
+
       uid = currentUser._id;
     }
-    const status = await enrollmentsDao.enrollUserInCourse(uid, cid);
-    res.send(status);
-  };
-  const unenrollUserFromCourse = async (req, res) => {
+
+    const enrollment =
+      await enrollmentsDao.enrollUserInCourse(
+        uid,
+        cid
+      );
+
+    res.json(enrollment);
+  } catch (error) {
+    console.error("ENROLL ERROR:", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+  const unenrollUserFromCourse = async (
+  req,
+  res
+) => {
+  try {
     let { uid, cid } = req.params;
+
     if (uid === "current") {
-      const currentUser = req.session["currentUser"];
+      const currentUser =
+        req.session["currentUser"];
+
+      if (!currentUser) {
+        res.sendStatus(401);
+        return;
+      }
+
       uid = currentUser._id;
     }
-    const status = await enrollmentsDao.unenrollUserFromCourse(uid, cid);
-    res.send(status);
-  };
+
+    const deletedEnrollment =
+      await enrollmentsDao.unenrollUserFromCourse(
+        uid,
+        cid
+      );
+
+    if (!deletedEnrollment) {
+      res.status(404).json({
+        message: "Enrollment not found",
+      });
+      return;
+    }
+
+    res.json(deletedEnrollment);
+  } catch (error) {
+    console.error("UNENROLL ERROR:", error);
+
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
   app.post("/api/users/:uid/courses/:cid", enrollUserInCourse);
   app.delete("/api/users/:uid/courses/:cid", unenrollUserFromCourse);
 
