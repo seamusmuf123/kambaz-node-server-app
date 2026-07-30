@@ -70,7 +70,7 @@ UserRoutes(app, db)
 CourseRoutes(app, db);
 ModulesRoutes(app, db);
 AssignmentRoutes(app, db);
-EnrollmentsRoutes(app, db);
+EnrollmentsRoutes(app);
 Lab5(app)
 
 const port = process.env.PORT || 4000
